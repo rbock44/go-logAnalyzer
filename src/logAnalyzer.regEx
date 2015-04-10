@@ -1,0 +1,69 @@
+## --------------------------------------------------------
+
+## You can define how your logfiles should be tested
+
+## Empty lines are ignored
+## With '##' you can write comments
+## '## LINE-SECTION + name' can be used to group our 
+## regular expressions. The 'name' will be shown in the output
+
+## You can also specify a '## DUPLICATE-SECTION' the regular 
+## expressions in this group will be used to identify relevant
+## parts within a line for the search for duplicates. So this 
+## regular expressions are used to strip down a particular line
+## to compare against the stripped down version of the previous line.
+## The matches will be replaced by ''
+## f.e. for a IP4 address '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$' 	
+## will strip the line '192.168.1.1 SOME IMPORTANT STUFF'
+## to 'SOME IMPORTANT STUFF'
+## So the two lines '192.168.1.1 SOME IMPORTANT STUFF' and
+## '10.10.1.1 SOME IMPORTANT STUFF' will be shown as duplicates
+
+## The regular expressions within GO are RE2 compatible, so these 
+## are the expressions you can use: 
+## https://re2.googlecode.com/hg/doc/syntax.html
+## RE2 means in particular NO BACKREFERENCES (because of performance)
+## More information about regular expressions can be found here 
+## http://en.wikipedia.org/wiki/Regular_expression
+
+## --------------------------------------------------------
+
+
+
+
+## --------------------------------------------------------
+## DUPLICATE-SECTION 
+## --------------------------------------------------------
+^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$
+
+
+
+
+## --------------------------------------------------------
+## LINE-SECTION email
+## --------------------------------------------------------
+## email address according to 
+## http://www.w3.org/TR/html5/forms.html#valid-e-mail-address
+^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
+
+## email address according to
+## http://www.regular-expressions.info/email.html 
+## needed to match the test users GUID@brainloop.com
+## adapted so non-capital letters are also found
+[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
+
+## --------------------------------------------------------
+## LINE-SECTION paramters
+## --------------------------------------------------------
+name(\w)*(\W)*:
+name(\w)*(\W)*=
+token(\w)*(\W)*:
+
+## --------------------------------------------------------
+## LINE-SECTION useless log entries
+## --------------------------------------------------------
+## NILS
+<nil>
+## Entries without description
+:[\d]*: {
+	

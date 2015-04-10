@@ -1,0 +1,8 @@
+## RegEx identifing SourceFiles which should not be tested
+
+## These can be ignored forever
+email-tracer_debug.go
+
+## These must be removed when Andrew has fixed the bug in cqrs
+commands.go:161: CommandDispatchManager.DispatchCommand:
+events.go:163: EventDispatchManager.DispatchEvent:
