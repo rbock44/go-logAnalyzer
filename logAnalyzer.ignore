@@ -1,0 +1,62 @@
+## ================================================================================================
+## logAnalyzer
+## DEFINE what should be ignored
+## ================================================================================================
+
+## first some wordings
+
+## 1) Empty lines are ignored
+## 2) '##' are comments
+## 3) a SECTION (read on to get the knowledge what this is) begins 
+##    with "## 'LEVELNAME'-SECTION " (f.e. ## DUPLICATE-SECTION)
+##    and ends with the next declaration of a SECTION
+## 4) a positive match is a finding, and a finding will result
+##    in ignoring this line/file
+## 5) Regular Expression Syntax
+## 	  The regular expressions within GO are RE2 compatible, so these 
+##    are the expressions you can use: 
+##    https://re2.googlecode.com/hg/doc/syntax.html
+##    RE2 means in particular NO BACKREFERENCES (because of performance)
+##    More information about regular expressions can be found here 
+##    http://en.wikipedia.org/wiki/Regular_expression
+
+## This config is devided into two parts:
+## 1) how to find duplicates
+## 2) how to find 'ugly' log lines
+
+
+## In the '## DUPLICATE-SECTION' you can define regular expressions
+## which identify lines which should not be searched for duplicates
+## (but they will be tested against 'ugly' log-content) 
+
+## In the '## SOURCEFILE-SECTION' you can define regular expressions
+## which identify lines which should not be searched for 'ugly'
+## code (but they will be tested for duplicates)
+
+## ================================================================================================
+
+
+
+## --------------------------------------------------------
+## DUPLICATE-SECTION
+## --------------------------------------------------------
+
+## do not test 172.20.15.32 domain 2015/04/14 11:48:12 cqrs.go:111: blablabla
+## for duplicates
+(.)*\sdomain\s(.)*cqrs.go:111:
+
+## do not test 172.20.15.32 auth 2015/04/14 11:47:59 rest.go:893: blablabla
+## for duplicates
+(.)*\sauth\s(.)*rest.go:893:
+
+
+## --------------------------------------------------------
+## SOURCEFILE-SECTION 
+## --------------------------------------------------------
+
+## These can be ignored forever
+email-tracer_debug.go
+
+## These must be removed when Andrew has fixed the bug in cqrs
+commands.go:161: CommandDispatchManager.DispatchCommand:
+events.go:163: EventDispatchManager.DispatchEvent:

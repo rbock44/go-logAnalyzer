@@ -1,0 +1,141 @@
+## ================================================================================================
+## logAnalyzer
+## DEFINE How your logfiles should be tested
+## ================================================================================================
+
+## first some wordings
+
+## 1) Empty lines are ignored
+## 2) '##' are comments
+## 3) a SECTION (read on to get the knowledge what this is) begins 
+##    with "## 'LEVELNAME'-SECTION 'name'" (f.e. ## LINE-SECTION email)
+##    and ends with the next declaration of a SECTION
+## 4) a positive match is a finding, and you normaly don't want to have
+##    any findings
+## 5) Regular Expression Syntax
+## 	  The regular expressions within GO are RE2 compatible, so these 
+##    are the expressions you can use: 
+##    https://re2.googlecode.com/hg/doc/syntax.html
+##    RE2 means in particular NO BACKREFERENCES (because of performance)
+##    More information about regular expressions can be found here 
+##    http://en.wikipedia.org/wiki/Regular_expression
+
+
+## This config is devided into two parts:
+## 1) how to find duplicates
+## 2) how to find 'ugly' log lines
+
+## 1) DUPLICATES
+## -------------
+
+## Within the DUPLICATE SECTIONs you can define two different kinds of regular
+## expressions: the ones which will be trimmed and the ones describeing 
+## the parts of the logline which must be different
+## So: 
+##     Write TRIM-regEx for the parts which should be ignored
+##     Write DIFFER-regEx for the parts which should be different
+##     And the rest of the line MUST be equal to get a match
+
+## The '## DUPLICATE-TRIM-SECTION' contains regular expressions 
+## which are used to strip down a particular line
+## to compare against the stripped down version of the previous line.
+## If there are regular expressions they will be used one by one .... 
+## The matches will be replaced by ''
+## f.e. for a IP4 address '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$' 	
+## will strip the line '192.168.1.1 SOME IMPORTANT STUFF'
+## to 'SOME IMPORTANT STUFF'
+## So the two lines '192.168.1.1 SOME IMPORTANT STUFF' and
+## '10.10.1.1 SOME IMPORTANT STUFF' will be shown as duplicates
+
+## The '## DUPLICATE-DIFFER-SECTION' contains regular expressions 
+## which must be different in two lines, to result in a positive 
+## match (AFTER TRIM). Sounds complicated but is easy ... 
+## Think of a function 'a' calling function 'b' both are logging 
+## exactly the same stuff and you want to find these matches ... 
+## the logline will contain 'a' and 'b'. To get arround this
+## you can define regular expressions which are used to detect 
+## these differences.
+## f.e. the regular expression ' (\w)*.go:(\d)*: ' will extract
+## 'rest.go:198:' and 'blubber.go:198' from the lines
+## 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## 2015/04/10 06:57:46 blubber.go:198: Failed to get member Not found
+## the test is positive, because these two lines are 'matching' and
+## differ in the important parts ('rest.go:198:' and 'blubber.go:198')
+## but the same regular expression will extract
+## 'rest.go:198:' and 'rest.go:198' from the lines
+## 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## so the test is negative, because these two lines are 'matching' but are 
+## _not_ different in the important parts ('rest.go:198:' and 'rest.go:198:')
+
+
+
+## 2) UGLY LOG LINES
+## -----------------
+
+## '## LINE-SECTION + name' can be used to group our 
+## regular expressions to find 'ugly' loglines. The 'name' will be shown in the output
+
+
+## ================================================================================================
+
+
+
+
+## --------------------------------------------------------
+## DUPLICATE-TRIM-SECTION
+## --------------------------------------------------------
+## REMOVE IP address and service 
+## TRIM 172.20.15.36 collaboration 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## TO   2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+(?:[0-9]{1,3}\.){3}[0-9]{1,3}\s(\w)*\s
+
+## --------------------------------------------------------
+## DUPLICATE-DIFFER-SECTION 
+## --------------------------------------------------------
+## date and time must match but the sourcefile (and line) must differ
+## for searching for duplicates
+## Means
+## 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## will NOT be shown as duplicates, BUT
+## 2015/04/10 06:57:46 rest.go:198: Failed to get member Not found
+## 2015/04/10 06:57:46 blubber.go:198: Failed to get member Not found
+## will BE shown as duplicates
+(\w)*.go:(\d)*:
+
+
+
+
+## --------------------------------------------------------
+## LINE-SECTION email
+## --------------------------------------------------------
+## email address according to 
+## http://www.w3.org/TR/html5/forms.html#valid-e-mail-address
+^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
+
+## email address according to
+## http://www.regular-expressions.info/email.html 
+## needed to match the test users GUID@brainloop.com
+## adapted so non-capital letters are also found
+[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
+
+## --------------------------------------------------------
+## LINE-SECTION forbidden paramters
+## --------------------------------------------------------
+name(\w)*(\W)*:
+name(\w)*(\W)*=
+token(\w)*(\W)*:
+
+## --------------------------------------------------------
+## LINE-SECTION useless log entries
+## --------------------------------------------------------
+## NILS
+<nil>
+
+## --------------------------------------------------------
+## LINE-SECTION missing description
+## --------------------------------------------------------
+## Entries without description
+## :[\d]*: {
+	
