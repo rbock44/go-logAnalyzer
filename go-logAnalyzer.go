@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"go-logAnalyzer/logAnalyzer"
+	"github.com/theHasp/go-logAnalyzer/logAnalyzer"
 	"log"
 	"os"
 	"path/filepath"
