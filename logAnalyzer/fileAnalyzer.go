@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []IgnoreRegEx, duplicateBufferSize int, fileUrlToAnalyze string) (result bool, hits []string) {
+func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []IgnoreRegEx, duplicateBufferSize int, showProgress bool, fileUrlToAnalyze string) (result bool, hits []string) {
 
 	result = true
 
@@ -27,9 +27,13 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fileSizeInBytes := fileStat.Size()
 	bar := pb.New64(fileSizeInBytes).SetUnits(pb.U_BYTES)
-	bar.Start()
+
+	if showProgress {
+		bar.Start()
+	}
 
 	lineBuffer := make([]string, duplicateBufferSize)
 
@@ -57,10 +61,16 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 			hits = append(hits, hitRegEx.Level+"/"+hitRegEx.Name+" #"+strconv.Itoa(lineNumber)+" - "+hitString)
 			result = false
 		}
-		bar.Add(lineLengthInBytes)
+
+		if showProgress {
+			bar.Add(lineLengthInBytes)
+		}
+
 	}
 
-	bar.Finish()
+	if showProgress {
+		bar.Finish()
+	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)

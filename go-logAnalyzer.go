@@ -21,16 +21,19 @@ func main() {
 	var outFileUrl = flag.String("out", "", " [OPTIONAL]  The url to the file containing the results")
 	var duplicateBufferSize = flag.Int("buf", 0, " [OPTIONAL]  Indicates how many lines should be checked in a row for duplicates")
 	var verbose = flag.Bool("v", false, "[OPTIONAL]  Verbose mode")
+	var scriptMode = flag.Bool("scm", false, "[OPTIONAL]  Script-Mode - Supress Progress Bar")
 
 	flag.Parse()
 
-	fmt.Println()
-	fmt.Println("RegExFile          : " + *regExDictionrayFileUrl)
-	if *ignoreSrcFilesFileUrl != "" {
-		fmt.Println("IgnoreFile         : " + *ignoreSrcFilesFileUrl)
+	if !*scriptMode {
+		fmt.Println()
+		fmt.Println("RegExFile          : " + *regExDictionrayFileUrl)
+		if *ignoreSrcFilesFileUrl != "" {
+			fmt.Println("IgnoreFile         : " + *ignoreSrcFilesFileUrl)
+		}
+		fmt.Println("LogFile/Folder     : " + *logFileUrl)
+		fmt.Println()
 	}
-	fmt.Println("LogFile/Folder     : " + *logFileUrl)
-	fmt.Println()
 
 	// try to get the regular expressions
 	if *regExDictionrayFileUrl == "" || *logFileUrl == "" {
@@ -186,7 +189,7 @@ func main() {
 				childOutFileName = newOutFileName
 			}
 
-			logFileIsOk, logMsg := processLogFile(regularExpressions, regexToIdentifyIgnoredParts, *duplicateBufferSize, filepath.Join(fileToAnalyze.Name(), childName), *verbose, childOutFileName)
+			logFileIsOk, logMsg := processLogFile(regularExpressions, regexToIdentifyIgnoredParts, *duplicateBufferSize, filepath.Join(fileToAnalyze.Name(), childName), *verbose, *scriptMode, childOutFileName)
 
 			if !logFileIsOk {
 				logMsgs = append(logMsgs, logMsg)
@@ -198,7 +201,7 @@ func main() {
 
 	} else {
 
-		logFileIsOk, logMsg := processLogFile(regularExpressions, regexToIdentifyIgnoredParts, *duplicateBufferSize, fileToAnalyze.Name(), *verbose, *outFileUrl)
+		logFileIsOk, logMsg := processLogFile(regularExpressions, regexToIdentifyIgnoredParts, *duplicateBufferSize, fileToAnalyze.Name(), *verbose, *scriptMode, *outFileUrl)
 
 		if !logFileIsOk {
 			logMsgs = append(logMsgs, logMsg)
@@ -226,20 +229,22 @@ func main() {
 	os.Exit(0)
 }
 
-func processLogFile(regularExpressions []logAnalyzer.NamedRegEx, regexToIdentifyIgnoredParts []logAnalyzer.IgnoreRegEx, duplicateBufferSize int, logFileUrl string, verbose bool, outFileUrl string) (logFileIsOk bool, logMsg string) {
+func processLogFile(regularExpressions []logAnalyzer.NamedRegEx, regexToIdentifyIgnoredParts []logAnalyzer.IgnoreRegEx, duplicateBufferSize int, logFileUrl string, verbose bool, scriptMode bool, outFileUrl string) (logFileIsOk bool, logMsg string) {
 	fmt.Println("processing LogFile : " + logFileUrl)
 
 	logFileIsOk = true
 	logMsg = ""
 	var hits []string
 
-	logFileIsOk, hits = logAnalyzer.IsFileOK(regularExpressions, regexToIdentifyIgnoredParts, duplicateBufferSize, logFileUrl)
+	logFileIsOk, hits = logAnalyzer.IsFileOK(regularExpressions, regexToIdentifyIgnoredParts, duplicateBufferSize, !scriptMode, logFileUrl)
 
 	if !logFileIsOk {
 		logMsg = "[  ERROR  ] " + logFileUrl + " - has " + strconv.Itoa(len(hits)) + " positive test(s) ..."
 	}
 
-	printErrors(logFileUrl, verbose, hits)
+	if !scriptMode {
+		printErrors(logFileUrl, verbose, hits)
+	}
 	writeErrorFile(outFileUrl, hits)
 
 	return logFileIsOk, logMsg
