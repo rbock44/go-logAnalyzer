@@ -142,6 +142,8 @@ func match(regularExpressions []NamedRegEx, left string, right string) (result b
 	trimmedLeft := left
 	trimmedRight := right
 
+	// fmt.Println("BEFORE TRIMMING THE PARTS WHICH MUST DIFFER: " + trimmedLeft + " == " + trimmedRight)
+
 	for _, namedRegExregEx := range regularExpressions {
 		if namedRegExregEx.Level == REGEX_LEVEL_DUPLICATE_DIFFER {
 			regEx, _ := regexp.Compile(namedRegExregEx.RegEx)
@@ -161,8 +163,10 @@ func match(regularExpressions []NamedRegEx, left string, right string) (result b
 	// no parts defined which should differ - so the result
 	// is the comparision of the two trimmed parts
 	if !foundDifferRegEx {
-		return trimmedLeft != trimmedRight
+		return trimmedLeft == trimmedRight
 	}
+
+	// fmt.Println("AFTER TRIMMING THE PARTS WHICH MUST DIFFER: " + trimmedLeft + " == " + trimmedRight)
 
 	// there IS something defined which should differ
 	// but if the trimmed parts are not equal, the two
@@ -170,6 +174,8 @@ func match(regularExpressions []NamedRegEx, left string, right string) (result b
 	if trimmedRight != trimmedLeft {
 		return false
 	}
+
+	// fmt.Println("THE PARTS WHICH MUST DIFFER: " + mustDifferLeft + " == " + mustDifferRight)
 
 	// the trimmed parts are equal and something should differ
 	return mustDifferLeft != mustDifferRight

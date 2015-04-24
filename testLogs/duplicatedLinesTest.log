@@ -1,5 +1,8 @@
-172.20.11.30 admin 2015/03/26 15:41:17 karl.go:99: blubber
-172.20.11.30 admin 2015/03/26 15:41:17 karl.go:99: blubber
+172.20.11.30 admin 2015/03/26 15:41:17 start.go:99: some text here
+172.20.11.30 admin 2015/03/26 15:41:17 start.go:99: some text here
 
-172.20.11.30 admin 2015/03/26 15:45:17 otto.go:100: blubber
-172.20.11.30 admin 2015/03/26 15:45:17 theo.go:9999: blubber
+172.20.11.30 admin 2015/03/26 15:41:17 start.go:99: some text here
+192.20.11.30 admin 2015/03/26 15:41:17 start.go:99: some text here
+
+172.20.11.30 admin 2015/03/26 15:45:17 start.go:100: some text here
+192.20.11.30 admin 2015/03/26 15:45:17 innerStart.go:9999: some text here

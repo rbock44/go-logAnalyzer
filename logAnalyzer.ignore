@@ -49,6 +49,8 @@
 ## for duplicates
 (.)*\sauth\s(.)*rest.go:893:
 
+## do not test 192.20.11.30 admin 2015/03/26 15:45:17 start.go:9999: blablabla
+(.)*\sadmin\s(.)*innerStart.go:9999:
 
 ## --------------------------------------------------------
 ## SOURCEFILE-SECTION 
