@@ -3,7 +3,6 @@ package logAnalyzer
 import (
 	"bufio"
 	"fmt"
-	"github.com/cheggaaa/pb"
 	"log"
 	"os"
 	"regexp"
@@ -29,11 +28,6 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 	}
 
 	fileSizeInBytes := fileStat.Size()
-	bar := pb.New64(fileSizeInBytes).SetUnits(pb.U_BYTES)
-
-	if showProgress {
-		bar.Start()
-	}
 
 	lineBuffer := make([]string, duplicateBufferSize)
 
@@ -62,14 +56,6 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 			result = false
 		}
 
-		if showProgress {
-			bar.Add(lineLengthInBytes)
-		}
-
-	}
-
-	if showProgress {
-		bar.Finish()
 	}
 
 	if err := scanner.Err(); err != nil {
