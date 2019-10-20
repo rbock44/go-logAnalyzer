@@ -22,13 +22,6 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 	}
 	defer fileToAnalyze.Close()
 
-	fileStat, err := fileToAnalyze.Stat()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fileSizeInBytes := fileStat.Size()
-
 	lineBuffer := make([]string, duplicateBufferSize)
 
 	scanner := bufio.NewScanner(fileToAnalyze)
@@ -49,7 +42,6 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 			result = false
 		}
 
-		lineLengthInBytes := len(line)
 		lineIsOk, hitString, hitRegEx := IsLineOK(regularExpressions, regexToIdentifyIgnoredParts, line)
 		if !lineIsOk {
 			hits = append(hits, hitRegEx.Level+"/"+hitRegEx.Name+" #"+strconv.Itoa(lineNumber)+" - "+hitString)
