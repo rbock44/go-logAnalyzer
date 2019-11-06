@@ -4,6 +4,7 @@ import (
 	"regexp"
 )
 
+// IsLineOK checks whether the line contains a regex
 func IsLineOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []IgnoreRegEx, stringToAnalyze string) (result bool, hitString string, hit NamedRegEx) {
 	var nilNamedRegEx NamedRegEx
 

@@ -10,14 +10,14 @@ import (
 	"strings"
 )
 
+// IsFileOK checks if the file does not contain regex defined
 func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []IgnoreRegEx, duplicateBufferSize int, showProgress bool, fileUrlToAnalyze string) (result bool, hits []string) {
 
 	result = true
 
 	fileToAnalyze, err := os.Open(fileUrlToAnalyze)
 	if err != nil {
-		fmt.Println("[  ERROR  ] Could not open logfile.")
-		fmt.Println()
+		fmt.Printf("[  ERROR  ] Could not open logfile %s.\n\n", fileUrlToAnalyze)
 		os.Exit(1)
 	}
 	defer fileToAnalyze.Close()

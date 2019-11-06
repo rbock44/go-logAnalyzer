@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/rbock44/go-logAnalyzer/logAnalyzer"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/rbock44/go-logAnalyzer/logAnalyzer"
 )
 
 func main() {
@@ -78,9 +79,8 @@ func main() {
 		if !strings.HasPrefix(line, "##") && line != "" && line != "\n" {
 			_, err := regexp.Compile(line)
 			if err != nil {
-				fmt.Println("[  ERROR  ] Could not compile regular expression. " + line)
-				fmt.Println("[  ERROR  ] Error was: " + err.Error())
-				fmt.Println()
+				fmt.Printf("[  ERROR  ] Could not compile regular expression for %s. %s\n", *logFileUrl, line)
+				fmt.Printf("[  ERROR  ] Error was: %+v\n\n", err)
 				os.Exit(1)
 			}
 			regularExpression := logAnalyzer.NamedRegEx{Level: level, Name: regexName, RegEx: line}
@@ -139,8 +139,7 @@ func main() {
 
 	fileToAnalyze, err := os.Open(*logFileUrl)
 	if err != nil {
-		fmt.Println("[  ERROR  ] Could not open logfile.")
-		fmt.Println()
+		fmt.Printf("[  ERROR  ] Could not open logfile %s.\n\n", *logFileUrl)
 		os.Exit(1)
 	}
 	defer fileToAnalyze.Close()
@@ -223,8 +222,7 @@ func main() {
 
 		os.Exit(1)
 	}
-	fmt.Println("[   O K   ] NO positive test in logfile(s) ...")
-	fmt.Println()
+	fmt.Printf("[   O K   ] NO positive test in logfile(s) %s ...\n\n", *logFileUrl)
 
 	os.Exit(0)
 }
