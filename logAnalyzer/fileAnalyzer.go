@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -44,7 +43,7 @@ func IsFileOK(regularExpressions []NamedRegEx, regexToIdentifyIgnoredParts []Ign
 
 		lineIsOk, hitString, hitRegEx := IsLineOK(regularExpressions, regexToIdentifyIgnoredParts, line)
 		if !lineIsOk {
-			hits = append(hits, hitRegEx.Level+"/"+hitRegEx.Name+" #"+strconv.Itoa(lineNumber)+" - "+hitString)
+			hits = append(hits, hitRegEx.Level+"/"+hitRegEx.Name+" #"+strconv.Itoa(lineNumber)+" - "+string(hitString))
 			result = false
 		}
 
@@ -77,7 +76,7 @@ func checkForDuplicates(regularExpressions []NamedRegEx, regexToIdentifyIgnoredP
 	// should the current line be ignored ???
 	for _, regEx := range regexToIdentifyIgnoredParts {
 		if regEx.Level == REGEX_LEVEL_DUPLICATE {
-			ignored, _ := regexp.MatchString(regEx.RegEx, newLine)
+			ignored := regEx.RegEx.MatchString(newLine)
 			if ignored {
 				return false, 0, buffer
 			}
@@ -88,8 +87,7 @@ func checkForDuplicates(regularExpressions []NamedRegEx, regexToIdentifyIgnoredP
 	trimmedLine := newLine
 	for _, regEx := range regularExpressions {
 		if regEx.Level == REGEX_LEVEL_DUPLICATE_TRIM {
-			r, _ := regexp.Compile(regEx.RegEx)
-			trimmedLine = r.ReplaceAllString(trimmedLine, "")
+			trimmedLine = regEx.RegEx.ReplaceAllString(trimmedLine, "")
 		}
 	}
 
@@ -124,7 +122,7 @@ func match(regularExpressions []NamedRegEx, left string, right string) (result b
 
 	for _, namedRegExregEx := range regularExpressions {
 		if namedRegExregEx.Level == REGEX_LEVEL_DUPLICATE_DIFFER {
-			regEx, _ := regexp.Compile(namedRegExregEx.RegEx)
+			regEx := namedRegExregEx.RegEx
 
 			findingsLeft := regEx.FindAllString(left, -1)
 			mustDifferLeft = mustDifferLeft + strings.Join(findingsLeft, "-")

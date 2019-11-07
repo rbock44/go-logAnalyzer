@@ -1,5 +1,7 @@
 package logAnalyzer
 
+import "regexp"
+
 const (
 	REGEX_LEVEL_DUPLICATE        = "DUPLICATE"
 	REGEX_LEVEL_SOURCEFILE       = "SOURCEFILE"
@@ -11,10 +13,10 @@ const (
 type NamedRegEx struct {
 	Level string
 	Name  string
-	RegEx string
+	RegEx *regexp.Regexp
 }
 
 type IgnoreRegEx struct {
 	Level string
-	RegEx string
+	RegEx *regexp.Regexp
 }

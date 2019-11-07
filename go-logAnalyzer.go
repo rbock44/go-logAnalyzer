@@ -83,7 +83,8 @@ func main() {
 				fmt.Printf("[  ERROR  ] Error was: %+v\n\n", err)
 				os.Exit(1)
 			}
-			regularExpression := logAnalyzer.NamedRegEx{Level: level, Name: regexName, RegEx: line}
+			compiled := regexp.MustCompile(line)
+			regularExpression := logAnalyzer.NamedRegEx{Level: level, Name: regexName, RegEx: compiled}
 			regularExpressions = append(regularExpressions, regularExpression)
 		}
 	}
@@ -127,7 +128,8 @@ func main() {
 					fmt.Println()
 					os.Exit(1)
 				}
-				regularExpression := logAnalyzer.IgnoreRegEx{Level: level, RegEx: line}
+				compiled := regexp.MustCompile(line)
+				regularExpression := logAnalyzer.IgnoreRegEx{Level: level, RegEx: compiled}
 				regexToIdentifyIgnoredParts = append(regexToIdentifyIgnoredParts, regularExpression)
 			}
 		}
